@@ -34,7 +34,7 @@ const theme = createMuiTheme({
 
         },
         ContentMain:{
-            paddingLeft:300,
+            paddingLeft:200,
             paddingTop:80
         },
         darkStyleBackgroud:{

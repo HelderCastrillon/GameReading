@@ -1,5 +1,6 @@
-.clicky-word{
-    color: purple;
+.wonder-word{
+    color:salmon;
     font-weight: bold;
-    cursor: 'pointer'
+    cursor: 'pointer'!important;
+    background-color:azure;
   }

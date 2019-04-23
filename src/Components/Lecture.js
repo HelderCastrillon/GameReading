@@ -3,20 +3,20 @@ import Typography from '@material-ui/core/Typography';
 import { withTheme } from '@material-ui/core/styles';
 import Transformer from 'react-transform-words'
 import Popover from 'react-text-selection-popover';
-import styleExtra from '../css/styleExtra.css'
+import '../css/styleExtra.css'
 
 const style={
     content:{
             width:'60%',
             color:'white'
-        },
+        }
         
 }
 const matchWords = [
     {
       word: 'que más allá', // can be a phrase
       action: 'click',
-      className: "clicky-word", // set a custom css class
+      className: "wonder-word", // set a custom css class
       caseSensitive: true,
       actionCallback: () => { console.log('clicked!!') } // captures action (on click)
     }
@@ -48,10 +48,7 @@ class Lecture extends React.Component{
                             />
                         </p>
                     )
-                })}
-                
-
-            
+                })} 
             </Typography>
         
             <Popover

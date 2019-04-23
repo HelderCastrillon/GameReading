@@ -46,7 +46,9 @@ class MainConcent extends React.Component {
       renderCards(){
         return Book.stories.map(story=>{
             return(
+                <Grid item xs={3} key={"k"+story.key}>
                 <CardLecture {...story}  selectLecture={this.selectLecture.bind(this)}/>
+                </Grid>
             )
         });
 
@@ -66,7 +68,7 @@ class MainConcent extends React.Component {
                             <Typography variant="h4" color={this.state.styleSelected?"inherit":"default"} style={styles.grow}>
                              Esto lo he visto en algún lado
                             </Typography>
-                            <Button color={this.state.styleSelected?"inherit":"default"}>Lecturas</Button>
+                            <Button color={this.state.styleSelected?"inherit":"default"}  onClick={()=>this.selectLecture(null)}>Lecturas</Button>
                             <Button color={this.state.styleSelected?"inherit":"default"}>Acerca del proyecto</Button>
                             <Switch
                                 checked={this.state.styleSelected}
@@ -106,11 +108,11 @@ class MainConcent extends React.Component {
                         </Toolbar>
                     </AppBar>
                 </Grid>
-                <Grid item xs={12} style={styles.ContentMain}>
+                <Grid container  direction="row" justify="flex-start" alignItems="flex-start"  style={styles.ContentMain}>
                             {
                                 this.state.currentLecture==null?
                                 this.renderCards():
-                                <Lecture currentLecture={this.state.currentLecture} color={this.state.styleSelected?"inherit":"default"}/> 
+                                <Grid item xs={12}><Lecture currentLecture={this.state.currentLecture} color={this.state.styleSelected?"inherit":"default"}/></Grid> 
                             }
                 </Grid>
                 <Grid item xs={12}>
