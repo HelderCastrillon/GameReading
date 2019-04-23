@@ -28,15 +28,15 @@ function MediaCard(props) {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image="/img/ejemplo.jpg"
-          title="El rastro de tu sangre en la nieve"
+          image={props.cover}
+          title={props.title}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-          El rastro de tu sangre en la nieve
+          {props.title}
           </Typography>
           <Typography component="p">
-          Al anochecer, cuando llegaron a la frontera, Nena Daconte se dio cuenta de que el dedo con el anillo de bodas le seguía sangrando. El guardia civil con una manta de lana cruda sobre el tricornio de charol examinó los pasaportes a la luz de una linterna de carburo, haciendo un grande esfuerzo para que no lo derribara la presión del viento que soplaba de los Pirineos. Aunque eran dos pasaportes diplomáticos en regla, el guardia levantó la linterna para comprobar que los retratos se parecían a las caras
+          {props.summary}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -44,7 +44,7 @@ function MediaCard(props) {
       <IconButton aria-label="Add to favorites">
             <FavoriteIcon />
         </IconButton>
-        <Button size="small" color="primary" onClick={()=>props.selectLecture('lect-1')}>
+        <Button size="small" color="primary" onClick={()=>props.selectLecture(props)}>
           Leer!!
         </Button>
       </CardActions>

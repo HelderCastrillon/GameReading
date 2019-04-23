@@ -14,6 +14,7 @@ import Switch from '@material-ui/core/Switch';
 import theme from '../theme';
 import CardLecture from './CardLecture'
 import Lecture from './Lecture';
+import Book from '../data/stories.json';
 class MainConcent extends React.Component {
     constructor(props){
         super(props);    
@@ -41,11 +42,21 @@ class MainConcent extends React.Component {
       selectLecture(currentLecture){
         this.setState({currentLecture});
       }
+  
+      renderCards(){
+        return Book.stories.map(story=>{
+            return(
+                <CardLecture {...story}  selectLecture={this.selectLecture.bind(this)}/>
+            )
+        });
+
+      }
     
     render(){
         const {styles}=theme;
     const open = Boolean(this.state.anchorEl);
     return (
+       
         <>
             <Grid container spacing={24} style={this.state.styleSelected?styles.darkStyleBackgroud:styles.whiteStyleBackgroud} >
                 <Grid item xs={12}>
@@ -98,7 +109,7 @@ class MainConcent extends React.Component {
                 <Grid item xs={12} style={styles.ContentMain}>
                             {
                                 this.state.currentLecture==null?
-                                <CardLecture selectLecture={this.selectLecture.bind(this)}/>:
+                                this.renderCards():
                                 <Lecture currentLecture={this.state.currentLecture} color={this.state.styleSelected?"inherit":"default"}/> 
                             }
                 </Grid>
