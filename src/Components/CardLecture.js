@@ -13,8 +13,17 @@ import IconButton from '@material-ui/core/IconButton';
 
 
 const styles = {
+  title:{
+    height:60,
+    marginBottom:10
+  },
+  summary:{
+    height:100
+  },
   card: {
     maxWidth: 345,
+    height:400,
+    marginBottom:40
   },
   media: {
     height: 140,
@@ -25,25 +34,28 @@ function MediaCard(props) {
   const { classes } = props;
   return (
     <Card className={classes.card}>
-      <CardActionArea>
         <CardMedia
           className={classes.media}
           image={props.cover}
           title={props.title}
         />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-          {props.title}
-          </Typography>
+          <div className={classes.title}>
+            <Typography gutterBottom variant="h5" component="h2">
+            {props.title}
+            </Typography>
+          </div>
+          <div className={classes.summary}>
           <Typography component="p">
-          {props.summary}
+          {props.summary.substring(0, 200)}
           </Typography>
+          </div>
         </CardContent>
-      </CardActionArea>
+    
       <CardActions>
-      <IconButton aria-label="Add to favorites">
+      <IconButton aria-label="Add to favorites" onClick={()=>props.likeLecture(props.bookid)} disabled={props.disabledlikes} color={props.liked.find(like=>{return like==props.bookid})==undefined?"default":"primary"} >
             <FavoriteIcon />
-        </IconButton>
+        </IconButton >
         <Button size="small" color="primary" onClick={()=>props.selectLecture(props)}>
           Leer!!
         </Button>

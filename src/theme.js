@@ -61,6 +61,9 @@ const theme = createMuiTheme({
         grow: {
             flexGrow: 1,
         },
+        cardGrid:{
+            minWidth:200
+        }
     }
   });
  

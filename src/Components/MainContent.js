@@ -9,6 +9,7 @@ import Logo from '../Images/Logo.png'
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Avatar from '@material-ui/core/Avatar';
 import Menu from '@material-ui/core/Menu';
 import Switch from '@material-ui/core/Switch';
 
@@ -28,7 +29,9 @@ class MainConcent extends React.Component {
             anchorEl: null,
             styleSelected:true,
             currentLecture:null,
-            Book:[]
+            Book:[],
+            likes:[],
+            userAccount:null
         };
 
       
@@ -45,8 +48,7 @@ class MainConcent extends React.Component {
       };
     
       handleClose(){
-        this.loginFacebook();
-        this.setState({ anchorEl: null });
+          this.setState({ anchorEl: null });
       };
       selectLecture(currentLecture){
         this.setState({currentLecture});
@@ -57,8 +59,8 @@ class MainConcent extends React.Component {
         if(Book.length>0)
             return Book.map(story=>{
                 return(
-                    <Grid item xs={3} key={"k"+story.key}>
-                    <CardLecture {...story}  selectLecture={this.selectLecture.bind(this)}/>
+                    <Grid style={theme.cardGrid} item xs={3} sm={3} key={"k"+story.key}>
+                    <CardLecture {...story} bookid={story.key} likeLecture={this.setLike.bind(this)} selectLecture={this.selectLecture.bind(this)} liked={this.state.likes} disabledlikes={this.state.userAccount==null?true:false}/>
                     </Grid>
                 )
             });
@@ -66,12 +68,12 @@ class MainConcent extends React.Component {
       }
       loginFacebook(){
         var provider = new firebase.auth.FacebookAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(function(result) {
+        firebase.auth().signInWithPopup(provider).then((result)=> {
             // This gives you a Facebook Access Token. You can use it to access the Facebook API.
             var token = result.credential.accessToken;
             // The signed-in user info.
-            var user = result.user;
-            console.log(user);
+            var userAccount = result.user;
+            this.setState({userAccount,anchorEl: null});
             // ...
           }).catch(function(error) {
             // Handle Errors here.
@@ -82,7 +84,11 @@ class MainConcent extends React.Component {
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
             // ...
+            this.setState({userAccount:null,anchorEl: null});
           });
+      }
+      logOut(){
+        this.setState({ anchorEl: null,userAccount:null });
       }
       initFirebase(){
                   // Initialize Firebase
@@ -102,6 +108,32 @@ class MainConcent extends React.Component {
         // ...
         });
       }
+      getLikes(){
+        let userId=this.state.userAccount.uid
+        return firebase.database().ref('/likes/'+userId).once('value').then((Stories)=> {
+            this.setState({likes:Stories.val()});
+        // ...
+        });
+      }
+      setLike(bookid){
+        let booksLikes=this.state.likes
+        let userId=this.state.userAccount.uid
+        if (booksLikes.find(book=>{return book==bookid})==bookid)
+            booksLikes= booksLikes.filter(book=>{return book!=bookid})
+        else
+            booksLikes.push(bookid)
+
+        firebase.database().ref('/likes/'+userId).set({
+          "book": booksLikes
+        }, function(error) {
+          if (error) {
+            console.error(error)
+          } else {
+           console.log("exitooo")
+          }
+        });
+      }
+      
     componentDidMount(){
         this.initFirebase();  
         this.getStories();      
@@ -136,8 +168,11 @@ class MainConcent extends React.Component {
                                     onClick={this.handleMenu.bind(this)}
                                     color={this.state.styleSelected?"inherit":"default"}
                                     >
-                                    <AccountCircle />
+                                    {this.state.userAccount==null?<AccountCircle />:<Avatar alt="Lector" src={this.state.userAccount.photoURL} />}
+                                    
                                     </IconButton>
+                                    {
+                                      this.state.userAccount==null?
                                     <Menu
                                     id="menu-appbar"
                                     anchorEl={this.state.anchorEl}
@@ -152,15 +187,36 @@ class MainConcent extends React.Component {
                                     open={open}
                                     onClose={this.handleClose.bind(this)}
                                     >
-                                    <MenuItem onClick={this.handleClose.bind(this)}>Favoritos</MenuItem>
-                                    <MenuItem onClick={this.handleClose.bind(this)}>Salir</MenuItem>
+                                    
+                                      <MenuItem onClick={this.loginFacebook.bind(this)}>Iniciar Sesión</MenuItem>
+                                                                 
                                     </Menu>
+                                    :
+                                    <Menu
+                                    id="menu-appbar"
+                                    anchorEl={this.state.anchorEl}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={open}
+                                    onClose={this.handleClose.bind(this)}
+                                    >
+                                    <MenuItem disabled={true}> {this.state.userAccount.displayName}</MenuItem>
+                                      <MenuItem onClick={this.handleClose.bind(this)}>Favoritos</MenuItem>
+                                      <MenuItem onClick={this.logOut.bind(this)}>Salir</MenuItem>
+                                      </Menu>
+                                    }
                                 </div>
                                 )}
                             </Toolbar>
                         </AppBar>
                     </Grid>
-                    <Grid container  direction="row" justify="flex-start" alignItems="flex-start"  style={styles.ContentMain}>
+                    <Grid container spacing={24}  direction="row" justify="flex-start" alignItems="flex-start"  style={styles.ContentMain}>
                                 {
                                     this.state.currentLecture==null?
                                     this.renderCards():
