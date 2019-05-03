@@ -59,7 +59,7 @@ class MainConcent extends React.Component {
         if(Book.length>0)
             return Book.map(story=>{
                 return(
-                    <Grid style={theme.cardGrid} item xs={3} sm={3} key={"k"+story.key}>
+                    <Grid item xs={6} sm={3} style={theme.cardGrid} key={"k"+story.key}>
                     <CardLecture {...story} bookid={story.key} likeLecture={this.setLike.bind(this)} selectLecture={this.selectLecture.bind(this)} liked={this.state.likes} disabledlikes={this.state.userAccount==null?true:false}/>
                     </Grid>
                 )
@@ -67,6 +67,7 @@ class MainConcent extends React.Component {
 
       }
       loginFacebook(){
+        this.setState({anchorEl: null});
         var provider = new firebase.auth.FacebookAuthProvider();
         firebase.auth().signInWithPopup(provider).then((result)=> {
             // This gives you a Facebook Access Token. You can use it to access the Facebook API.
@@ -74,8 +75,10 @@ class MainConcent extends React.Component {
             // The signed-in user info.
             var userAccount = result.user;
             this.setState({userAccount,anchorEl: null});
+            this.getLikes(userAccount.uid)
             // ...
-          }).catch(function(error) {
+          }).catch((error)=> {
+            console.warn(error)
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
@@ -108,10 +111,9 @@ class MainConcent extends React.Component {
         // ...
         });
       }
-      getLikes(){
-        let userId=this.state.userAccount.uid
+      getLikes(userId){
         return firebase.database().ref('/likes/'+userId).once('value').then((Stories)=> {
-            this.setState({likes:Stories.val()});
+            this.setState({likes:Stories.val().book});
         // ...
         });
       }
@@ -125,11 +127,11 @@ class MainConcent extends React.Component {
 
         firebase.database().ref('/likes/'+userId).set({
           "book": booksLikes
-        }, function(error) {
+        }, (error)=> {
           if (error) {
             console.error(error)
           } else {
-           console.log("exitooo")
+            this.setState({likes:booksLikes});
           }
         });
       }
@@ -144,7 +146,7 @@ class MainConcent extends React.Component {
         return (
         
             <>
-                <Grid container spacing={24} style={this.state.styleSelected?styles.darkStyleBackgroud:styles.whiteStyleBackgroud} >
+                <Grid container spacing={8} style={this.state.styleSelected?styles.darkStyleBackgroud:styles.whiteStyleBackgroud} >
                     <Grid item xs={12}>
                         <AppBar position="static" style={styles.AppBar}>
                             <Toolbar>
@@ -216,6 +218,7 @@ class MainConcent extends React.Component {
                             </Toolbar>
                         </AppBar>
                     </Grid>
+                    <div style={{flexGrow: 1}}></div>
                     <Grid container spacing={24}  direction="row" justify="flex-start" alignItems="flex-start"  style={styles.ContentMain}>
                                 {
                                     this.state.currentLecture==null?

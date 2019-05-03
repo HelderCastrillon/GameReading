@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -14,8 +13,11 @@ import IconButton from '@material-ui/core/IconButton';
 
 const styles = {
   title:{
-    height:60,
-    marginBottom:10
+    height:40,
+    marginBottom:15
+  },
+  author:{
+  
   },
   summary:{
     height:100
@@ -31,7 +33,11 @@ const styles = {
 };
 
 function MediaCard(props) {
+ let liked=props.liked;
+ if(liked==undefined)
+    liked=[]
   const { classes } = props;
+  console.log(liked)
   return (
     <Card className={classes.card}>
         <CardMedia
@@ -46,14 +52,19 @@ function MediaCard(props) {
             </Typography>
           </div>
           <div className={classes.summary}>
-          <Typography component="p">
+          <Typography>
           {props.summary.substring(0, 200)}
           </Typography>
+          </div>
+          <div className={classes.author}>
+            <Typography gutterBottom variant="subtitle2" gutterBottom>
+            Autor: {props.author}
+            </Typography>
           </div>
         </CardContent>
     
       <CardActions>
-      <IconButton aria-label="Add to favorites" onClick={()=>props.likeLecture(props.bookid)} disabled={props.disabledlikes} color={props.liked.find(like=>{return like==props.bookid})==undefined?"default":"primary"} >
+      <IconButton aria-label="Add to favorites" onClick={()=>props.likeLecture(props.bookid)} disabled={props.disabledlikes} color={liked.find(like=>{return like==props.bookid})==undefined?"default":"primary"} >
             <FavoriteIcon />
         </IconButton >
         <Button size="small" color="primary" onClick={()=>props.selectLecture(props)}>

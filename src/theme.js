@@ -48,21 +48,16 @@ const theme = createMuiTheme({
             background: 'rgba(0,0,0,.0)',
             border: 0,
             height: 48,
-            padding: '0 300px',
+            padding: '0 200px',
             boxShadow: '0 3px 5px 2px rgba(0,0,0,.0)',
-        },
-        forms: {
-            minWidth: 350,
-            maxWidth: 750,
-        },
-        formInput: {
-            fontWeight: 100,
         },
         grow: {
             flexGrow: 1,
         },
         cardGrid:{
-            minWidth:200
+            width:250,
+            minWidth:250,
+            overflow:'hidden'
         }
     }
   });
