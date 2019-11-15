@@ -59,7 +59,7 @@ class MainConcent extends React.Component {
         if(Book.length>0)
             return Book.map(story=>{
                 return(
-                    <Grid item xs={6} sm={3} style={theme.cardGrid} key={"k"+story.key}>
+                    <Grid item xs={6} sm={6} style={theme.cardGrid} key={"k"+story.key}>
                     <CardLecture {...story} bookid={story.key} likeLecture={this.setLike.bind(this)} selectLecture={this.selectLecture.bind(this)} liked={this.state.likes} disabledlikes={this.state.userAccount==null?true:false}/>
                     </Grid>
                 )
@@ -219,11 +219,11 @@ class MainConcent extends React.Component {
                         </AppBar>
                     </Grid>
                     <div style={{flexGrow: 1}}></div>
-                    <Grid container spacing={24}  direction="row" justify="flex-start" alignItems="flex-start"  style={styles.ContentMain}>
+                    <Grid container spacing={3}  direction="row" justify="flex-start" alignItems="flex-start"  style={styles.ContentMain}>
                                 {
                                     this.state.currentLecture==null?
                                     this.renderCards():
-                                    <Grid item xs={12}><Lecture currentLecture={this.state.currentLecture} color={this.state.styleSelected?"inherit":"default"}/></Grid> 
+                                    <Grid item xs={12}><Lecture currentLecture={this.state.currentLecture} user={this.state.userAccount} color={this.state.styleSelected?"inherit":"default"}/></Grid> 
                                 }
                     </Grid>
                     <Grid item xs={12}>

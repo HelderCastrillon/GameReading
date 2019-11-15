@@ -4,7 +4,10 @@ import { withTheme } from '@material-ui/core/styles';
 import Transformer from 'react-transform-words'
 import Popover from 'react-text-selection-popover';
 import '../css/styleExtra.css'
-
+import { Paper, Button } from '@material-ui/core';
+import Note from './Note'
+//firebase
+import firebase from "firebase";
 const style={
     content:{
             width:'60%',
@@ -14,20 +17,41 @@ const style={
 }
 const matchWords = [
     {
-      word: 'que más allá', // can be a phrase
+      word: 'se dejaba interesar lentamente por la trama, por el dibujo de los personajes. Esa', // can be a phrase
       action: 'click',
       className: "wonder-word", // set a custom css class
       caseSensitive: true,
-      actionCallback: () => { console.log('clicked!!') } // captures action (on click)
+      actionCallback: () => { console.log('clicked!!')} // captures action (on click)
     }
   ]
 class Lecture extends React.Component{
 
     constructor(props){
         super(props)
+        this.state={
+            open:false,
+            textSelected:"",
+            user:{}
+        }
     }
 
+    getNotes=()=>{
+        return firebase.database().ref('/notes/').once('value').then((Notes)=> {
+            this.setState({Notes:Notes.val().notes});
+        // ...
+        });
+      }
 
+    componentDidMount(){
+        document.addEventListener('mouseup', () => {
+            let textSelected = window.getSelection().toString(); 
+            if(textSelected.length>4)
+                this.setState({open:true,textSelected})
+          });
+    }
+    close=()=>{
+        this.setState({open:false})
+    }
     render(){
         const {title,summary,cover,text}=this.props.currentLecture;
         var line=0;
@@ -42,7 +66,7 @@ class Lecture extends React.Component{
                     line++;
                     return(
                         <p>
-                            <Transformer key={line} ref={this.refLecture}
+                            <Transformer key={line}
                             matchWords={matchWords} 
                             displayText= {value}
                             />
@@ -50,12 +74,10 @@ class Lecture extends React.Component{
                     )
                 })} 
             </Typography>
-        
-            <Popover
-             onTextSelect={() => this.setState({ isOpen: true })}
-             selectionRef={this.refLecture}
-             >Hello there</Popover>
-        </div>                        
+
+            <Note {...this.state} close={this.close} user={this.props.user}/>
+        </div>  
+                              
         )
     }
 }

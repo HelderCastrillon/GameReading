@@ -23,7 +23,7 @@ const styles = {
     height:100
   },
   card: {
-    maxWidth: 345,
+    maxWidth: 545,
     height:400,
     marginBottom:40
   },
