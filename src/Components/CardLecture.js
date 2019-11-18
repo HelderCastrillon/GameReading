@@ -37,7 +37,6 @@ function MediaCard(props) {
  if(liked==undefined)
     liked=[]
   const { classes } = props;
-  console.log(liked)
   return (
     <Card className={classes.card}>
         <CardMedia

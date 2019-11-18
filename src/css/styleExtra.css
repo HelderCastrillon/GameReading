@@ -5,3 +5,7 @@
     background-color:azure;
     cursor: pointer;
   }
+  .view-notes {
+    position: fixed;
+
+}

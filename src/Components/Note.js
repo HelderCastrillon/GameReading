@@ -23,16 +23,34 @@ export default function AlertDialog(props) {
     const [reference, setReference] = useState("");
 
     const saveNote=(user,textSelected,note,reference)=>{
-        firebase.database().ref('/notes').set({
-          user,
-          textSelected,
-          note,
-          reference
+      // Get a reference to the database service
+        var d = new Date(),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear(),
+      hour= d.getHours(),
+      minute = d.getMinutes(),
+      seconds = d.getSeconds();
+      if (month.length < 2) 
+          month = '0' + month;
+      if (day.length < 2) 
+          day = '0' + day;
+
+      var date=[year, month, day].join('/')+" "+[hour,minute,seconds].join(":");
+
+      firebase.database().ref('/notes/'+d.getTime()).set({
+          "user":{"displayName": user.displayName,
+                  "email": user.email,
+                  "photoURL":user.photoURL},
+                  "textSelected":textSelected,
+          "note":note,
+          "reference":reference,
+          "date": date
         }, (error)=> {
           if (error) {
             console.error(error)
           } else {
-        
+            props.close();
           }
         });
       }

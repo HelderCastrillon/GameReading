@@ -2,12 +2,11 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { withTheme } from '@material-ui/core/styles';
 import Transformer from 'react-transform-words'
-import Popover from 'react-text-selection-popover';
 import '../css/styleExtra.css'
-import { Paper, Button } from '@material-ui/core';
 import Note from './Note'
 //firebase
 import firebase from "firebase";
+import ViewNote from './ViewNote';
 const style={
     content:{
             width:'60%',
@@ -15,15 +14,6 @@ const style={
         }
         
 }
-const matchWords = [
-    {
-      word: 'se dejaba interesar lentamente por la trama, por el dibujo de los personajes. Esa', // can be a phrase
-      action: 'click',
-      className: "wonder-word", // set a custom css class
-      caseSensitive: true,
-      actionCallback: () => { console.log('clicked!!')} // captures action (on click)
-    }
-  ]
 class Lecture extends React.Component{
 
     constructor(props){
@@ -36,18 +26,31 @@ class Lecture extends React.Component{
     }
 
     getNotes=()=>{
-        return firebase.database().ref('/notes/').once('value').then((Notes)=> {
-            this.setState({Notes:Notes.val().notes});
-        // ...
+        var starCountRef = firebase.database().ref('notes/');
+        starCountRef.on('value', (snapshot)=> {
+            this.setNotes(snapshot.val())
         });
       }
-
+      setNotes=(rNotes)=>{
+        var Notes=Object.values(rNotes).map(note=>{
+            return({
+                word: note.textSelected,
+                action: 'click',
+                className: "wonder-word", // set a custom css class
+                caseSensitive: true,
+                actionCallback: () => { console.log(note)} // captures action (on click)
+            })
+        })
+ 
+        this.setState({Notes:Notes});
+      }
     componentDidMount(){
         document.addEventListener('mouseup', () => {
             let textSelected = window.getSelection().toString(); 
             if(textSelected.length>4)
                 this.setState({open:true,textSelected})
           });
+        this.getNotes()
     }
     close=()=>{
         this.setState({open:false})
@@ -56,7 +59,8 @@ class Lecture extends React.Component{
         const {title,summary,cover,text}=this.props.currentLecture;
         var line=0;
         return(
-        <div style={style.content}>
+            <>
+            <div style={style.content}>
             <Typography variant="h4" gutterBottom color={this.props.color}>
                 {title} 
             </Typography>
@@ -67,17 +71,20 @@ class Lecture extends React.Component{
                     return(
                         <p>
                             <Transformer key={line}
-                            matchWords={matchWords} 
+                            matchWords={this.state.Notes} 
                             displayText= {value}
                             />
                         </p>
                     )
                 })} 
             </Typography>
-
-            <Note {...this.state} close={this.close} user={this.props.user}/>
+            
+           
+           
         </div>  
-                              
+        <Note {...this.state} close={this.close} user={this.props.user}/>
+         <div className="view-notes" ><ViewNote/></div>
+         </>                     
         )
     }
 }
