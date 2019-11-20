@@ -1,15 +1,18 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { withTheme } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid'
 import Transformer from 'react-transform-words'
 import '../css/styleExtra.css'
 import Note from './Note'
+
 //firebase
 import firebase from "firebase";
 import ViewNote from './ViewNote';
 const style={
     content:{
-            width:'60%',
+            width:'90%',
             color:'white'
         }
         
@@ -21,7 +24,8 @@ class Lecture extends React.Component{
         this.state={
             open:false,
             textSelected:"",
-            user:{}
+            user:{},
+            note:undefined
         }
     }
 
@@ -38,7 +42,7 @@ class Lecture extends React.Component{
                 action: 'click',
                 className: "wonder-word", // set a custom css class
                 caseSensitive: true,
-                actionCallback: () => { console.log(note)} // captures action (on click)
+                actionCallback: () => this.setState({note:note}) // captures action (on click)
             })
         })
  
@@ -55,35 +59,46 @@ class Lecture extends React.Component{
     close=()=>{
         this.setState({open:false})
     }
+    closeNote=()=>{
+        this.setState({note:undefined})
+    }
     render(){
         const {title,summary,cover,text}=this.props.currentLecture;
         var line=0;
         return(
             <>
-            <div style={style.content}>
-            <Typography variant="h4" gutterBottom color={this.props.color}>
-                {title} 
-            </Typography>
-            <Typography variant="body2" gutterBottom align="justify" color={this.props.color}>
-                   
-                {text.map(value=>{
-                    line++;
-                    return(
-                        <p>
-                            <Transformer key={line}
-                            matchWords={this.state.Notes} 
-                            displayText= {value}
-                            />
-                        </p>
-                    )
-                })} 
-            </Typography>
+            <Grid container spacing={3}>
+                <Grid item xs={9}>
+                <div style={style.content}>
+                    <Typography variant="h4" gutterBottom color={this.props.color}>
+                        {title} 
+                    </Typography>
+                    <Typography variant="body2" gutterBottom align="justify" color={this.props.color}>
+                        
+                        {text.map(value=>{
+                            line++;
+                            return(
+                                <p>
+                                    <Transformer key={line}
+                                    matchWords={this.state.Notes} 
+                                    displayText= {value}
+                                    />
+                                </p>
+                            )
+                        })} 
+                    </Typography>
             
            
            
-        </div>  
-        <Note {...this.state} close={this.close} user={this.props.user}/>
-         <div className="view-notes" ><ViewNote/></div>
+                 </div>  
+                </Grid>
+                    <Grid item xs={3} sm={3}>                    
+                    <div className="view-notes" >{this.state.note==undefined?"":<ViewNote {...this.state.note} closeNote={this.closeNote} />}</div>
+                    </Grid>
+                </Grid>
+                <Note {...this.state} close={this.close} user={this.props.user}/>
+        
+           
          </>                     
         )
     }

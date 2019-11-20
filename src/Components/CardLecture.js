@@ -66,7 +66,7 @@ function MediaCard(props) {
       <IconButton aria-label="Add to favorites" onClick={()=>props.likeLecture(props.bookid)} disabled={props.disabledlikes} color={liked.find(like=>{return like==props.bookid})==undefined?"default":"primary"} >
             <FavoriteIcon />
         </IconButton >
-        <Button size="small" color="primary" onClick={()=>props.selectLecture(props)}>
+        <Button size="small" color="primary" onClick={()=>props.selectLecture(props)} disabled={props.disabledlikes}>
           Leer!!
         </Button>
       </CardActions>
