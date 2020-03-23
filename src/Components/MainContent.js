@@ -17,6 +17,8 @@ import Switch from '@material-ui/core/Switch';
 import theme from '../theme';
 import CardLecture from './CardLecture'
 import Lecture from './Lecture';
+import About from './About'
+import Favorite from './Favorites'
 //import Book from '../data/stories.json';
 
 //firebase
@@ -31,7 +33,9 @@ class MainConcent extends React.Component {
             currentLecture:null,
             Book:[],
             likes:[],
-            userAccount:null
+            userAccount:null,
+            showAbout:false,
+            showFavorite:false
         };
 
       
@@ -51,9 +55,14 @@ class MainConcent extends React.Component {
           this.setState({ anchorEl: null });
       };
       selectLecture(currentLecture){
-        this.setState({currentLecture});
+        this.setState({currentLecture,showAbout:false,showFavorite:false});
       }
-  
+      getAbout(){
+        this.setState({showAbout:true});
+      }
+      getFavorite(){
+        this.setState({showFavorite:true,anchorEl: null});
+      }
       renderCards(){
         var Book=this.state.Book;
         if(Book.length>0)
@@ -71,9 +80,9 @@ class MainConcent extends React.Component {
         var provider = new firebase.auth.FacebookAuthProvider();
         firebase.auth().signInWithPopup(provider).then((result)=> {
             // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-            var token = result.credential.accessToken;
             // The signed-in user info.
             var userAccount = result.user;
+            this.saveUserInformation(result);
             this.setState({userAccount,anchorEl: null});
             this.getLikes(userAccount.uid)
             // ...
@@ -90,6 +99,20 @@ class MainConcent extends React.Component {
             this.setState({userAccount:null,anchorEl: null});
           });
       }
+      saveUserInformation(userInformation){
+       var logindate = new Date();
+       var userId=userInformation.user.uid+"_"+(logindate/1);
+       firebase.database().ref('/users/'+userId).set(
+         {
+         "info":JSON.stringify(userInformation)      
+        }
+         , (error)=> {
+          if (error) {
+            console.error(error)
+          } 
+        });
+      }
+
       logOut(){
         this.setState({ anchorEl: null,userAccount:null });
       }
@@ -155,7 +178,7 @@ class MainConcent extends React.Component {
                                 Esto lo he visto en algún lado
                                 </Typography>
                                 <Button color={this.state.styleSelected?"inherit":"default"}  onClick={()=>this.selectLecture(null)}>Lecturas</Button>
-                                <Button color={this.state.styleSelected?"inherit":"default"}>Acerca del proyecto</Button>
+                                <Button color={this.state.styleSelected?"inherit":"default"} onClick={()=>this.getAbout()}>Acerca del proyecto</Button>
                                 <Switch
                                     checked={this.state.styleSelected}
                                     onChange={this.handleChangeStyle.bind(this)}
@@ -209,7 +232,7 @@ class MainConcent extends React.Component {
                                     onClose={this.handleClose.bind(this)}
                                     >
                                     <MenuItem disabled={true}> {this.state.userAccount.displayName}</MenuItem>
-                                      <MenuItem onClick={this.handleClose.bind(this)}>Favoritos</MenuItem>
+                                      <MenuItem onClick={()=>this.getFavorite()}>Favoritos</MenuItem>
                                       <MenuItem onClick={this.logOut.bind(this)}>Salir</MenuItem>
                                       </Menu>
                                     }
@@ -220,7 +243,9 @@ class MainConcent extends React.Component {
                     </Grid>
                     <div style={{flexGrow: 1}}></div>
                     <Grid container spacing={3}  direction="row" justify="flex-start" alignItems="flex-start"  style={styles.ContentMain}>
-                                {
+                                 {
+                                    this.state.showAbout==true?<About/>:
+                                    this.state.showFavorite==true?<Favorite books={this.state.Book} likes={this.state.likes} selectLecture={this.selectLecture.bind(this)} userName={this.state.userAccount.displayName}/>:
                                     this.state.currentLecture==null?
                                     this.renderCards():
                                     <Grid item xs={12}><Lecture currentLecture={this.state.currentLecture} user={this.state.userAccount} color={this.state.styleSelected?"inherit":"default"}/></Grid> 
@@ -230,6 +255,11 @@ class MainConcent extends React.Component {
                     
                     </Grid>
                 </Grid>
+                <Typography variant="caption" color={this.state.styleSelected?"inherit":"default"} style={styles.grow}>
+                    <p> <strong> Aplicación desarrollada por Helder Castrillón </strong></p>
+                    <p> Grupo de Invesigación Tic Unicomfacauca</p>
+                    <p> Popayán Cauca, 2020</p>
+                  </Typography>                
             </>
         )
 }
